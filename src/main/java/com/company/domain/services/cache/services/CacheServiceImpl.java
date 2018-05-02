@@ -4,11 +4,14 @@ import com.company.domain.services.cache.dto.CacheObject;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
 @Service
 public class CacheServiceImpl implements CacheService {
     private static BlockingDeque<CacheObject> deque;
+
+    private ConcurrentHashMap<String,String>  map;
 
     static {
         deque = new LinkedBlockingDeque<>();

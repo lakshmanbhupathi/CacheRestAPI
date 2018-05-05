@@ -3,7 +3,7 @@ In-memory  cache served via REST API
 
 **Requirement:**
 
-*   Build REST API to store key-value in local memory cache
+* Build REST API to store key-value in local memory cache
   *   API must have 4 endpoint following specification below
      *   /cache/add (This must store unique key only (existing key must be ignored), This will return true if the element was successfully added )
      *   /cache/remove (This will return true if the element was successfully removed)

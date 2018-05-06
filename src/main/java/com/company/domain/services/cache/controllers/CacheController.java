@@ -3,6 +3,7 @@ package com.company.domain.services.cache.controllers;
 import com.company.domain.services.cache.dto.CacheDto;
 import com.company.domain.services.cache.services.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ public class CacheController {
     }
 
     @RequestMapping(value = "/add" , method = RequestMethod.POST)
-    public boolean add(CacheDto cacheDto){
+    public boolean add(@RequestBody CacheDto cacheDto){
         return cacheService.add(cacheDto);
     }
 
@@ -30,7 +31,7 @@ public class CacheController {
     }
 
     @RequestMapping(value = "/remove", method = RequestMethod.DELETE)
-    public boolean remove(CacheDto cacheDto) {
+    public boolean remove(@RequestBody CacheDto cacheDto) {
         return cacheService.delete(cacheDto);
     }
 

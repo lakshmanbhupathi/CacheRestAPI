@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+/**
+ * REST API for in memory caching
+ *
+ * @author Lakshman Bhupathi
+ */
 @RestController
 @RequestMapping("/cache")
 public class CacheController {

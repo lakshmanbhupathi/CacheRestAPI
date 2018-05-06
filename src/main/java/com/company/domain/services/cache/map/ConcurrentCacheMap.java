@@ -9,6 +9,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Implementation of {@link LRUCacheMap}, also provides  Concurrency prone
+ * designed such way that it can handle high concurrency
+ * <p>
+ * maintains insertion order by embedding Doubly LinkedList into Map's Entry
+ *
+ * @param <K> key
+ * @param <V> value
+ *
+ * @author Lakshman Bhupathi
+ */
 public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
 
     private Entry<K, V> head;
@@ -22,7 +33,14 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
     private Lock writeLock = readWriteLock.writeLock();
     private Condition isEmptyCondition = writeLock.newCondition();
 
-    class Entry<K, V> {
+    /**
+     * Entry inner class for maintaining map
+     * holds next and prev pointer for maintaining insertion order
+     *
+     * @param <K> key
+     * @param <V> value
+     */
+    private class Entry<K, V> {
         K key;
         V value;
         Entry<K, V> next;
@@ -38,6 +56,9 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
         map = new ConcurrentHashMap<>();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean add(K key, V value) {
         Entry<K, V> newEntry = new Entry<>(key, value);
@@ -73,6 +94,9 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean remove(K key) {
         if (map.containsKey(key)) {
@@ -108,6 +132,9 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public V peek() {
         try {
@@ -118,8 +145,11 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public V  take(int timeOut) throws InterruptedException {
+    public V take(int timeOut) throws InterruptedException {
         try {
             writeLock.lock();
             if (map.isEmpty()) {
@@ -133,8 +163,11 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public V  take() throws InterruptedException {
+    public V take() throws InterruptedException {
         try {
             writeLock.lock();
             if (map.isEmpty()) {

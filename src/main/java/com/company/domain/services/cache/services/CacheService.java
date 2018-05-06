@@ -1,13 +1,13 @@
 package com.company.domain.services.cache.services;
 
-import com.company.domain.services.cache.dto.CacheObject;
+import com.company.domain.services.cache.dto.CacheDto;
 
 public interface CacheService {
-    boolean add(CacheObject cacheObject);
+    boolean add(CacheDto cacheDto);
 
-    CacheObject peek();
+    Object peek();
 
-    boolean delete(CacheObject cacheObject);
+    boolean delete(CacheDto cacheDto);
 
-    CacheObject take() throws InterruptedException;
+    Object take() throws InterruptedException;
 }

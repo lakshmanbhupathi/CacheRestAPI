@@ -1,8 +1,8 @@
 package com.company.domain.services.cache.dto;
 
-public class CacheObject {
+public class CacheDto {
     private String key;
-    private String value;
+    private Object value;
 
     public String getKey() {
         return key;
@@ -12,7 +12,7 @@ public class CacheObject {
         this.key = key;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 

@@ -1,39 +1,35 @@
 package com.company.domain.services.cache.services;
 
-import com.company.domain.services.cache.dto.CacheObject;
+import com.company.domain.services.cache.dto.CacheDto;
+import com.company.domain.services.cache.map.ConcurrentCacheMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingDeque;
 
 @Service
 public class CacheServiceImpl implements CacheService {
-    private static BlockingDeque<CacheObject> deque;
 
-    private ConcurrentHashMap<String,String>  map;
+    @Autowired
+    private ConcurrentCacheMap<String, Object> map;
 
-    static {
-        deque = new LinkedBlockingDeque<>();
+
+    @Override
+    public boolean add(CacheDto cacheDto) {
+        return map.add(cacheDto.getKey(), cacheDto.getValue());
     }
 
     @Override
-    public boolean add(CacheObject cacheObject) {
-        return deque.add(cacheObject);
+    public Object peek() {
+        return map.peek();
     }
 
     @Override
-    public CacheObject peek() {
-        return deque.pollLast();
+    public boolean delete(CacheDto cacheDto) {
+        return map.remove(cacheDto.getKey());
     }
 
     @Override
-    public boolean delete(CacheObject cacheObject) {
-        return deque.remove(cacheObject);
-    }
-
-    @Override
-    public CacheObject take() throws InterruptedException {
-        return deque.take();
+    public Object take() throws InterruptedException {
+        return map.take();
     }
 }

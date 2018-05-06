@@ -31,7 +31,7 @@ public class ConcurrentCacheMap<K, V> {
     private Lock readLock = readWriteLock.readLock();
     private Lock writeLock = readWriteLock.writeLock();
 
-    Condition isEmptyCondition = writeLock.newCondition();
+    private Condition isEmptyCondition = writeLock.newCondition();
 
     ConcurrentCacheMap() {
         map = new ConcurrentHashMap<>();

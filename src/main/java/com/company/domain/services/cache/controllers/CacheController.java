@@ -1,6 +1,6 @@
 package com.company.domain.services.cache.controllers;
 
-import com.company.domain.services.cache.dto.CacheObject;
+import com.company.domain.services.cache.dto.CacheDto;
 import com.company.domain.services.cache.services.CacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,22 +20,22 @@ public class CacheController {
     }
 
     @RequestMapping(value = "/add" , method = RequestMethod.POST)
-    public boolean add(CacheObject cacheObject){
-        return cacheService.add(cacheObject);
+    public boolean add(CacheDto cacheDto){
+        return cacheService.add(cacheDto);
     }
 
     @RequestMapping(value = "/peek",method = RequestMethod.GET)
-    public CacheObject peek(){
+    public Object peek(){
         return cacheService.peek();
     }
 
     @RequestMapping(value = "/remove", method = RequestMethod.DELETE)
-    public boolean remove(CacheObject cacheObject) {
-        return cacheService.delete(cacheObject);
+    public boolean remove(CacheDto cacheDto) {
+        return cacheService.delete(cacheDto);
     }
 
     @RequestMapping(value = "/take", method = RequestMethod.GET)
-    public CacheObject take(){
+    public Object take(){
         try {
             return cacheService.take();
         } catch (InterruptedException e) {

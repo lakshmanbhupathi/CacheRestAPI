@@ -15,18 +15,13 @@ public class CacheController {
     @Autowired
     private CacheService cacheService;
 
-    @RequestMapping("/test")
-    public String test(){
-        return "Lakshman";
-    }
-
-    @RequestMapping(value = "/add" , method = RequestMethod.POST)
-    public boolean add(@RequestBody CacheDto cacheDto){
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public boolean add(@RequestBody CacheDto cacheDto) {
         return cacheService.add(cacheDto);
     }
 
-    @RequestMapping(value = "/peek",method = RequestMethod.GET)
-    public Object peek(){
+    @RequestMapping(value = "/peek", method = RequestMethod.GET)
+    public Object peek() {
         return cacheService.peek();
     }
 
@@ -36,12 +31,7 @@ public class CacheController {
     }
 
     @RequestMapping(value = "/take", method = RequestMethod.GET)
-    public Object take(){
-        try {
-            return cacheService.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Object take() {
+        return cacheService.take();
     }
 }

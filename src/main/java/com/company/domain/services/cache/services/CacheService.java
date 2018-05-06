@@ -9,5 +9,5 @@ public interface CacheService {
 
     boolean delete(CacheDto cacheDto);
 
-    Object take() throws InterruptedException;
+    Object take();
 }

@@ -4,10 +4,12 @@ import com.company.domain.services.cache.exceptions.CacheEmptyTimeOutException;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class ConcurrentCacheMap<K, V> {
+public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
 
     private Entry<K, V> head;
 
@@ -36,19 +38,11 @@ public class ConcurrentCacheMap<K, V> {
         map = new ConcurrentHashMap<>();
     }
 
+    @Override
     public boolean add(K key, V value) {
         Entry<K, V> newEntry = new Entry<>(key, value);
         if (head == null && tail == null && map.isEmpty()) {
-            try {
-                writeLock.lock();
-
-                map.put(key, newEntry);
-                head = tail = newEntry;
-                isEmptyCondition.signal();
-                return true;
-            } finally {
-                writeLock.unlock();
-            }
+            return makeFirstEntry(key, newEntry);
         }
 
         if (map.putIfAbsent(key, newEntry) == null) {
@@ -66,24 +60,28 @@ public class ConcurrentCacheMap<K, V> {
         return false;
     }
 
+    private boolean makeFirstEntry(K key, Entry<K, V> newEntry) {
+        try {
+            writeLock.lock();
+
+            map.put(key, newEntry);
+            head = tail = newEntry;
+            isEmptyCondition.signal();
+            return true;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
     public boolean remove(K key) {
         if (map.containsKey(key)) {
             try {
                 writeLock.lock();
 
                 Entry entry = map.get(key);
-
-                if (entry.prev != null) {
-                    entry.prev.next = entry.next;
-                } else {
-                    head = entry.next;
-                }
-
-                if (entry.next != null) {
-                    entry.next.prev = entry.prev;
-                } else{
-                    tail = entry.prev;
-                }
+                modifyPrev(entry);
+                modifyNext(entry);
             } finally {
                 writeLock.unlock();
             }
@@ -94,6 +92,23 @@ public class ConcurrentCacheMap<K, V> {
         }
     }
 
+    private void modifyNext(Entry entry) {
+        if (entry.next != null) {
+            entry.next.prev = entry.prev;
+        } else {
+            tail = entry.prev;
+        }
+    }
+
+    private void modifyPrev(Entry entry) {
+        if (entry.prev != null) {
+            entry.prev.next = entry.next;
+        } else {
+            head = entry.next;
+        }
+    }
+
+    @Override
     public V peek() {
         try {
             readLock.lock();
@@ -103,23 +118,18 @@ public class ConcurrentCacheMap<K, V> {
         }
     }
 
-    public V take() throws InterruptedException {
+    @Override
+    public V  take() throws InterruptedException {
         try {
             writeLock.lock();
             if (map.isEmpty()) {
                 if (!isEmptyCondition.await(10, TimeUnit.SECONDS)) {
-                    throw new TimeoutException();
+                    throw new CacheEmptyTimeOutException();
                 }
             }
             V response = tail.value;
             remove(tail.key);
             return response;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw e;
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-            throw new CacheEmptyTimeOutException();
         } finally {
             writeLock.unlock();
         }

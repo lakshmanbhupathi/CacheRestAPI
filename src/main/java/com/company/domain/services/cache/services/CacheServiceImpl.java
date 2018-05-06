@@ -1,7 +1,8 @@
 package com.company.domain.services.cache.services;
 
 import com.company.domain.services.cache.dto.CacheDto;
-import com.company.domain.services.cache.map.ConcurrentCacheMap;
+import com.company.domain.services.cache.exceptions.InternalException;
+import com.company.domain.services.cache.map.LRUCacheMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +11,7 @@ import org.springframework.stereotype.Service;
 public class CacheServiceImpl implements CacheService {
 
     @Autowired
-    private ConcurrentCacheMap<String, Object> map;
-
+    private LRUCacheMap<String, Object> map;
 
     @Override
     public boolean add(CacheDto cacheDto) {
@@ -29,7 +29,12 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
-    public Object take() throws InterruptedException {
-        return map.take();
+    public Object take() {
+        try {
+            return map.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new InternalException(e.getMessage());
+        }
     }
 }

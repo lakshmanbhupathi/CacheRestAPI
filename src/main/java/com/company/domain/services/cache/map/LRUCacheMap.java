@@ -1,5 +1,7 @@
 package com.company.domain.services.cache.map;
 
+import com.company.domain.services.cache.exceptions.ContentNotFoundException;
+
 /**
  * LRUCacheMap LeastRecentlyUsed Cache Map stores data in key and value pairs.
  * <p>
@@ -33,6 +35,7 @@ public interface LRUCacheMap<K, V> {
      * returns recently added element's value
      *
      * @return value of recently added
+     * @throws {@link ContentNotFoundException} runtimeException if no elements are found
      */
     V peek();
 

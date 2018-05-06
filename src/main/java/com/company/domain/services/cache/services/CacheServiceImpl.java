@@ -61,4 +61,12 @@ public class CacheServiceImpl implements CacheService {
             throw new InternalException(e.getMessage());
         }
     }
+
+    public void setMap(LRUCacheMap<String, Object> map) {
+        this.map = map;
+    }
+
+    public void setTimeOutProperty(String timeOutProperty) {
+        this.timeOutProperty = timeOutProperty;
+    }
 }

@@ -1,7 +1,7 @@
 package com.company.domain.services.cache.map;
 
 import com.company.domain.services.cache.exceptions.CacheEmptyTimeOutException;
-
+import com.company.domain.services.cache.exceptions.ContentNotFoundException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -23,7 +23,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
 
     private Entry<K, V> head;
-
     private Entry<K, V> tail;
     private ConcurrentHashMap<K, Entry<K, V>> map;
 
@@ -139,6 +138,10 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
     public V peek() {
         try {
             readLock.lock();
+            if(map.isEmpty()){
+                throw new ContentNotFoundException("No contents available");
+            }
+
             return tail.value;
         } finally {
             readLock.unlock();
@@ -183,5 +186,9 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
         V response = tail.value;
         remove(tail.key);
         return response;
+    }
+
+    public int size(){
+        return map.size();
     }
 }

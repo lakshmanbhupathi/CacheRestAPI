@@ -20,7 +20,7 @@ import javax.validation.Valid;
 public class CacheController {
 
     @Autowired
-    private CacheService cacheService;
+    CacheService cacheService;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public boolean add(@Valid @RequestBody CacheDto cacheDto) {
@@ -40,5 +40,9 @@ public class CacheController {
     @RequestMapping(value = "/take", method = RequestMethod.GET)
     public Object take() {
         return cacheService.take();
+    }
+
+    public void setCacheService(CacheService cacheService) {
+        this.cacheService = cacheService;
     }
 }

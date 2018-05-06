@@ -116,5 +116,4 @@ public class CacheRestIntegrationTest {
                 restTemplate.exchange("/cache/remove", HttpMethod.POST, cacheDtoHttpEntity, String.class);
         assertEquals(HttpStatus.METHOD_NOT_ALLOWED, responseEntity.getStatusCode());
     }
-
 }

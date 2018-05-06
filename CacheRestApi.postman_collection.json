@@ -1,0 +1,73 @@
+{
+	"variables": [],
+	"info": {
+		"name": "CacheRestApi",
+		"_postman_id": "234b511f-670a-6299-be50-47b40bf2cf5f",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "add",
+			"request": {
+				"url": "localhost:8080/cache/add",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\":\"key2\",\n\t\"value\":\"value1\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "remove",
+			"request": {
+				"url": "localhost:8080/cache/remove",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\":\"key1\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "peek",
+			"request": {
+				"url": "localhost:8080/cache/peek",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "take",
+			"request": {
+				"url": "localhost:8080/cache/take",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

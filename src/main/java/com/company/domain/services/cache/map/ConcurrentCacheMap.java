@@ -30,4 +30,27 @@ public class ConcurrentCacheMap<K, V> {
         lock = new ReentrantLock();
     }
 
+    public boolean add(K key, V value) {
+        Entry<K, V> newEntry = new Entry<>(key, value);
+        if (head == null && tail == null && map.isEmpty()) {
+            map.put(key, newEntry);
+            head = tail = newEntry;
+            return true;
+        }
+
+        try {
+            lock.lock();
+            newEntry.prev = tail;
+            tail.next = newEntry;
+            tail = newEntry;
+        } finally {
+            lock.unlock();
+        }
+        if(map.putIfAbsent(key,newEntry) == null){
+            return true;
+        }
+
+        return false;
+    }
+
 }

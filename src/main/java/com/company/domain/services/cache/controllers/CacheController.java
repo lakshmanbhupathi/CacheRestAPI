@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/cache")
 public class CacheController {
@@ -16,7 +18,7 @@ public class CacheController {
     private CacheService cacheService;
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public boolean add(@RequestBody CacheDto cacheDto) {
+    public boolean add(@Valid @RequestBody CacheDto cacheDto) {
         return cacheService.add(cacheDto);
     }
 
@@ -26,7 +28,7 @@ public class CacheController {
     }
 
     @RequestMapping(value = "/remove", method = RequestMethod.DELETE)
-    public boolean remove(@RequestBody CacheDto cacheDto) {
+    public boolean remove(@Valid @RequestBody CacheDto cacheDto) {
         return cacheService.delete(cacheDto);
     }
 

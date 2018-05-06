@@ -119,19 +119,36 @@ public class ConcurrentCacheMap<K, V> implements LRUCacheMap<K, V> {
     }
 
     @Override
+    public V  take(int timeOut) throws InterruptedException {
+        try {
+            writeLock.lock();
+            if (map.isEmpty()) {
+                if (!isEmptyCondition.await(timeOut, TimeUnit.SECONDS)) {
+                    throw new CacheEmptyTimeOutException();
+                }
+            }
+            return takeLastInserted();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
     public V  take() throws InterruptedException {
         try {
             writeLock.lock();
             if (map.isEmpty()) {
-                if (!isEmptyCondition.await(10, TimeUnit.SECONDS)) {
-                    throw new CacheEmptyTimeOutException();
-                }
+                isEmptyCondition.await();
             }
-            V response = tail.value;
-            remove(tail.key);
-            return response;
+            return takeLastInserted();
         } finally {
             writeLock.unlock();
         }
+    }
+
+    private V takeLastInserted() {
+        V response = tail.value;
+        remove(tail.key);
+        return response;
     }
 }

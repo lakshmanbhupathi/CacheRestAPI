@@ -7,5 +7,7 @@ public interface LRUCacheMap<K, V> {
 
     V peek();
 
+    V take(int timeOut) throws InterruptedException;
+
     V take() throws InterruptedException;
 }

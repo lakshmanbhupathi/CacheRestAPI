@@ -4,6 +4,7 @@ import com.company.domain.services.cache.dto.CacheDto;
 import com.company.domain.services.cache.exceptions.InternalException;
 import com.company.domain.services.cache.map.LRUCacheMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -12,6 +13,9 @@ public class CacheServiceImpl implements CacheService {
 
     @Autowired
     private LRUCacheMap<String, Object> map;
+
+    @Value("${cache.timeout}")
+    private String timeOutProperty;
 
     @Override
     public boolean add(CacheDto cacheDto) {
@@ -31,8 +35,10 @@ public class CacheServiceImpl implements CacheService {
     @Override
     public Object take() {
         try {
-            return map.take();
-        } catch (InterruptedException e) {
+            int timeOut = Integer.parseInt(timeOutProperty);
+
+            return timeOut == 0 ? map.take() : map.take(timeOut);
+        } catch (Exception e) {
             e.printStackTrace();
             throw new InternalException(e.getMessage());
         }

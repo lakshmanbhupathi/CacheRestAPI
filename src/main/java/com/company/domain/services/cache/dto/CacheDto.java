@@ -1,6 +1,9 @@
 package com.company.domain.services.cache.dto;
 
+import javax.validation.constraints.NotNull;
+
 public class CacheDto {
+    @NotNull
     private String key;
     private Object value;
 

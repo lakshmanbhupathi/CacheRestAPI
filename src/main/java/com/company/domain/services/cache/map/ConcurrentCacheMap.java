@@ -1,9 +1,7 @@
 package com.company.domain.services.cache.map;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.*;
 
 public class ConcurrentCacheMap<K, V> {
 
@@ -24,9 +22,12 @@ public class ConcurrentCacheMap<K, V> {
     private Entry<K, V> tail;
 
     private ConcurrentHashMap<K, Entry<K, V>> map;
-    private Lock lock = new ReentrantLock();
-    Condition isEmptyCondition = lock.newCondition();
-    Condition isFullCondition = lock.newCondition();
+
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private Lock readLock = readWriteLock.readLock();
+    private Lock writeLock = readWriteLock.writeLock();
+
+    Condition isEmptyCondition = writeLock.newCondition();
 
     ConcurrentCacheMap() {
         map = new ConcurrentHashMap<>();
@@ -42,12 +43,12 @@ public class ConcurrentCacheMap<K, V> {
         }
 
         try {
-            lock.lock();
+            writeLock.lock();
             newEntry.prev = tail;
             tail.next = newEntry;
             tail = newEntry;
         } finally {
-            lock.unlock();
+            writeLock.unlock();
         }
         if (map.putIfAbsent(key, newEntry) == null) {
             return true;
@@ -59,18 +60,27 @@ public class ConcurrentCacheMap<K, V> {
     public boolean remove(K key) {
         if (map.contains(key)) {
             try {
-                lock.lock();
+                writeLock.lock();
 
                 Entry entry = map.get(key);
                 entry.prev.next = entry.next;
                 entry.next.prev = entry.prev;
             } finally {
-                lock.unlock();
+                writeLock.unlock();
             }
             map.remove(key);
             return true;
         } else {
             return false;
+        }
+    }
+
+    public V peek(){
+        try {
+            readLock.lock();
+            return tail.value;
+        } finally {
+            readLock.unlock();
         }
     }
 

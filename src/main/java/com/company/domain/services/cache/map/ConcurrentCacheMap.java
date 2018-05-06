@@ -1,6 +1,10 @@
 package com.company.domain.services.cache.map;
 
+import com.company.domain.services.cache.exceptions.CacheEmptyTimeOutException;
+
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.*;
 
 public class ConcurrentCacheMap<K, V> {
@@ -63,8 +67,9 @@ public class ConcurrentCacheMap<K, V> {
                 writeLock.lock();
 
                 Entry entry = map.get(key);
-                entry.prev.next = entry.next;
-                entry.next.prev = entry.prev;
+
+                if(entry.prev != null) entry.prev.next = entry.next;
+                if(entry.next != null) entry.next.prev = entry.prev;
             } finally {
                 writeLock.unlock();
             }
@@ -84,4 +89,25 @@ public class ConcurrentCacheMap<K, V> {
         }
     }
 
+    public V take() throws InterruptedException {
+        try{
+            writeLock.lock();
+            if(map.isEmpty()){
+                if(!isEmptyCondition.await(10,TimeUnit.SECONDS)){
+                    throw new TimeoutException();
+                }
+            }
+            V response = tail.value;
+            remove(tail.key);
+            return response;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+            throw new CacheEmptyTimeOutException();
+        } finally {
+            writeLock.unlock();
+        }
+    }
 }

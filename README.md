@@ -15,12 +15,12 @@ Solution:
 
 Technology stack:
 
-Java 8
-Spring boot 2.0.1.RELEASE
-gradle 4.6 (build tool)
-Github
-Intellij Idea 18
-PostMan
+- Java 8
+- Spring boot 2.0.1.RELEASE
+- gradle 4.6 (build tool)
+- Github
+- Intellij Idea 18
+- PostMan
 
 Instructions:
 
